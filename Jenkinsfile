@@ -101,20 +101,22 @@ pipeline {
                     sh '''
                             rm -rf .kube
                             mkdir .kube
+
+                            # Write the kubeconfig from Jenkins secret into .kube/config
                             cat $KUBECONFIG > .kube/config
 
-                            # Test connection before Helm deploy
+                            # Optional: check cluster connectivity (should work without TLS errors)
                             kubectl --kubeconfig=.kube/config cluster-info
 
-                            # Prepare Helm values file
+                            # Prepare your Helm values file and update image tag
                             cp fastapi/values.yaml values.yml
                             sed -i "s+tag.*+tag: ${DOCKER_TAG}+g" values.yml
 
-                            # Deploy with Helm
+                            # Deploy using Helm with kubeconfig specified
                             helm upgrade --install app fastapi \
-                                --values=values.yml \
-                                --namespace dev \
-                                --kubeconfig=.kube/config
+                            --values=values.yml \
+                            --namespace dev \
+                            --kubeconfig=.kube/config
                     '''
                 }
             }
