@@ -99,18 +99,22 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        rm -Rf .kube
-                        mkdir .kube
-                        ls
-                        cat $KUBECONFIG > .kube/config
-                        # sed -i 's|https://127.0.0.1:6443|https://192.168.58.2:6443|g' .kube/config
+                            rm -rf .kube
+                            mkdir .kube
+                            cat $KUBECONFIG > .kube/config
 
+                            # Test connection before Helm deploy
+                            kubectl --kubeconfig=.kube/config cluster-info
 
-                        cp fastapi/values.yaml values.yml
-                        cat values.yml
-                        sed -i "s+tag.*+tag: ${DOCKER_TAG}+g" values.yml
+                            # Prepare Helm values file
+                            cp fastapi/values.yaml values.yml
+                            sed -i "s+tag.*+tag: ${DOCKER_TAG}+g" values.yml
 
-                        helm upgrade --install app fastapi --values=values.yml --namespace dev --kubeconfig=.kube/config
+                            # Deploy with Helm
+                            helm upgrade --install app fastapi \
+                                --values=values.yml \
+                                --namespace dev \
+                                --kubeconfig=.kube/config
                     '''
                 }
             }
