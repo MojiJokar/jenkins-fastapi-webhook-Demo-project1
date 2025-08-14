@@ -103,7 +103,8 @@ pipeline {
                         mkdir .kube
                         ls
                         cat $KUBECONFIG > .kube/config
-                        sed -i 's|https://127.0.0.1:6443|https://your-kubernetes-api-server:6443|g' .kube/config
+                        sed -i 's|https://127.0.0.1:6443|https://192.168.58.2:6443|g' .kube/config
+
 
                         cp fastapi/values.yaml values.yml
                         cat values.yml
