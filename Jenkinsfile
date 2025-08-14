@@ -92,35 +92,35 @@ pipeline {
         }
         */
 
-        stage('Deployment in dev') {
-            environment {
-                KUBECONFIG = credentials("config") // Retrieve kubeconfig from secret file called "config" saved in Jenkins
-            }
-            steps {
-                script {
-                    sh '''
-                            rm -rf .kube
-                            mkdir .kube
+        // stage('Deployment in dev') {
+        //     environment {
+        //         KUBECONFIG = credentials("config") // Retrieve kubeconfig from secret file called "config" saved in Jenkins
+        //     }
+        //     steps {
+        //         script {
+        //             sh '''
+        //                     rm -rf .kube
+        //                     mkdir .kube
 
-                            # Write the kubeconfig from Jenkins secret into .kube/config
-                            cat $KUBECONFIG > .kube/config
+        //                     # Write the kubeconfig from Jenkins secret into .kube/config
+        //                     cat $KUBECONFIG > .kube/config
 
-                            # Optional: check cluster connectivity (should work without TLS errors)
-                            kubectl --kubeconfig=.kube/config cluster-info
+        //                     # Optional: check cluster connectivity (should work without TLS errors)
+        //                     kubectl --kubeconfig=.kube/config cluster-info
 
-                            # Prepare your Helm values file and update image tag
-                            cp fastapi/values.yaml values.yml
-                            sed -i "s+tag.*+tag: ${DOCKER_TAG}+g" values.yml
+        //                     # Prepare your Helm values file and update image tag
+        //                     cp fastapi/values.yaml values.yml
+        //                     sed -i "s+tag.*+tag: ${DOCKER_TAG}+g" values.yml
 
-                            # Deploy using Helm with kubeconfig specified
-                            helm upgrade --install app fastapi \
-                            --values=values.yml \
-                            --namespace dev \
-                            --kubeconfig=.kube/config
-                    '''
-                }
-            }
-        }
+        //                     # Deploy using Helm with kubeconfig specified
+        //                     helm upgrade --install app fastapi \
+        //                     --values=values.yml \
+        //                     --namespace dev \
+        //                     --kubeconfig=.kube/config
+        //             '''
+        //         }
+        //     }
+        // }
 
         stage('List Workspace') {
             steps {
