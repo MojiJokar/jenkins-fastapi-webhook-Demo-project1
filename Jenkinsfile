@@ -102,13 +102,14 @@ pipeline {
                         rm -Rf .kube
                         mkdir .kube
                         ls
+                        cat $KUBECONFIG > .kube/config
                         sed -i 's|https://127.0.0.1:6443|https://your-kubernetes-api-server:6443|g' .kube/config
 
-                        cat $KUBECONFIG > .kube/config
                         cp fastapi/values.yaml values.yml
                         cat values.yml
                         sed -i "s+tag.*+tag: ${DOCKER_TAG}+g" values.yml
-                        helm upgrade --install app fastapi --values=values.yml --namespace dev
+
+                        helm upgrade --install app fastapi --values=values.yml --namespace dev --kubeconfig=.kube/config
                     '''
                 }
             }
