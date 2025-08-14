@@ -17,7 +17,6 @@ pipeline {
             }
         }
 
-        
         stage('Docker Run') {
             steps {
                 script {
@@ -34,7 +33,6 @@ pipeline {
                 }
             }
         }
-        
 
         stage('Docker Push') {
             environment {
@@ -50,77 +48,25 @@ pipeline {
             }
         }
 
-        /*
-        stage('Deploy to Dev') {
+        stage('Deployment in dev') {
             environment {
-                KUBECONFIG = credentials('config')  // Jenkins secret file with your kubeconfig
+                KUBECONFIG = credentials("config") // we retrieve kubeconfig from secret file called config saved on jenkins
             }
             steps {
                 script {
                     sh '''
-                        # Prepare kubeconfig directory & write the kubeconfig file from Jenkins secret
-                        rm -rf .kube && mkdir .kube
+                        rm -Rf .kube
+                        mkdir .kube
+                        ls
                         cat $KUBECONFIG > .kube/config
-
-                        # Replace localhost address with the actual cluster IP in kubeconfig
-                        sed -i 's|https://127.0.0.1:6443|https://172.30.189.142:6443|g' .kube/config
-
-                        # Verify minimal kubeconfig content & current context
-                        echo "== kubeconfig minimal content =="
-                        kubectl --kubeconfig=.kube/config config view --minify
-
-                        echo "== current context =="
-                        kubectl --kubeconfig=.kube/config config current-context
-
-                        # Confirm connectivity - get cluster nodes
-                        echo "== checking connectivity =="
-                        kubectl --kubeconfig=.kube/config get nodes
-
-                        # Create namespace 'dev' if it doesn't exist
-                        kubectl --kubeconfig=.kube/config create namespace dev --dry-run=client -o yaml | \\
-                            kubectl --kubeconfig=.kube/config apply -f -
-
-                        # Prepare Helm values.yaml with Docker tag
-                        cp charts/values.yaml values.yml
-                        sed -i "s+tag:.*+tag: ${DOCKER_TAG}+g" values.yml
-
-                        # Deploy or upgrade app with Helm using kubeconfig
-                        helm upgrade --install app charts --values values.yml --namespace dev --kubeconfig=.kube/config
+                        cp fastapi/values.yaml values.yml
+                        cat values.yml
+                        sed -i "s+tag.*+tag: ${DOCKER_TAG}+g" values.yml
+                        helm upgrade --install app fastapi --values=values.yml --namespace dev
                     '''
                 }
             }
         }
-        */
-
-        // stage('Deployment in dev') {
-        //     environment {
-        //         KUBECONFIG = credentials("config") // Retrieve kubeconfig from secret file called "config" saved in Jenkins
-        //     }
-        //     steps {
-        //         script {
-        //             sh '''
-        //                     rm -rf .kube
-        //                     mkdir .kube
-
-        //                     # Write the kubeconfig from Jenkins secret into .kube/config
-        //                     cat $KUBECONFIG > .kube/config
-
-        //                     # Optional: check cluster connectivity (should work without TLS errors)
-        //                     kubectl --kubeconfig=.kube/config cluster-info
-
-        //                     # Prepare your Helm values file and update image tag
-        //                     cp fastapi/values.yaml values.yml
-        //                     sed -i "s+tag.*+tag: ${DOCKER_TAG}+g" values.yml
-
-        //                     # Deploy using Helm with kubeconfig specified
-        //                     helm upgrade --install app fastapi \
-        //                     --values=values.yml \
-        //                     --namespace dev \
-        //                     --kubeconfig=.kube/config
-        //             '''
-        //         }
-        //     }
-        // }
 
         stage('List Workspace') {
             steps {
