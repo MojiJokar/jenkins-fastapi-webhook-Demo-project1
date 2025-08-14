@@ -17,7 +17,7 @@ pipeline {
             }
         }
 
-        /*
+        
         stage('Docker Run') {
             steps {
                 script {
@@ -34,21 +34,21 @@ pipeline {
                 }
             }
         }
-        */
+        
 
-        stage('Docker Push') {
-            environment {
-                DOCKER_PASS = credentials("DOCKER_HUB_PASS")
-            }
-            steps {
-                script {
-                    sh '''
-                        docker login -u $DOCKER_ID -p $DOCKER_PASS
-                        docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
-                    '''
-                }
-            }
-        }
+        // stage('Docker Push') {
+        //     environment {
+        //         DOCKER_PASS = credentials("DOCKER_HUB_PASS")
+        //     }
+        //     steps {
+        //         script {
+        //             sh '''
+        //                 docker login -u $DOCKER_ID -p $DOCKER_PASS
+        //                 docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
+        //             '''
+        //         }
+        //     }
+        // }
 
         /*
         stage('Deploy to Dev') {
