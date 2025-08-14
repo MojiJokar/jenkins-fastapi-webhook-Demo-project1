@@ -2,7 +2,8 @@ pipeline {
     environment {
         DOCKER_ID = "maxjokar2020"         // Your Docker Hub ID
         DOCKER_IMAGE = "jenkins-fastapi-demo-project"
-        DOCKER_TAG = "v.${BUILD_ID}.0"
+        // DOCKER_TAG = "v.${BUILD_ID}.0"
+        DOCKER_TAG = "v.4" // Use the existing version tag here : when we dont want to increase in each build or push dokcer to avoide issue in jenkins versioning
     }
 
     agent any
