@@ -50,7 +50,7 @@ pipeline {
 
         stage('Deployment in dev') {
             environment {
-                KUBECONFIG = credentials("kubeconfig-credentials-id") // Jenkins secret file credential with kubeconfig
+                KUBECONFIG = credentials("minikube-kubeconfig") // Jenkins secret file credential with kubeconfig
             }
             steps {
                 script {
